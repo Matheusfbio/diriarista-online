@@ -3,48 +3,30 @@ import fetchDiarist from '@/diarist/services/fetchDiarist'
 import axios from 'axios'
 import perfilNull from '@/assets/img/perfil-null.png'
 import { defineComponent, onMounted, ref } from 'vue'
-
-// Define a interface do tipo de usuário
-interface Diarist {
-  id: number
-  nome: string
-  contato: string
-  email: string
-  endereco: string
-  cidade: string
-  perfil: string // URL da imagem de perfil
-}
+import type { Diarist } from '@/core/entities/diarist'
 
 export default defineComponent({
   setup() {
-    // Cria uma referência reativa para armazenar os usuários
     const diarists = ref<Diarist[]>([])
 
-    // Função para buscar e configurar os dados dos usuários
     const loadDiarists = async () => {
       try {
-        // Buscar dados dos diaristas
         const diaristResponse = await fetchDiarist()
         const diaristsData = diaristResponse
 
-        // Buscar dados das imagens
         const imageResponse = await axios.get(
           'http://localhost:1337/api/upload/files?populate=*',
         )
         const images = imageResponse.data
 
-        // Associar imagens aos diaristas
         diarists.value = diaristsData.map(diarist => {
-          // Busca a imagem correspondente ao perfil
           const matchedImage = images.find(
             image => image.id === diarist.perfil?.id,
           )
 
-          // Determina a URL da imagem
           const perfilUrl = matchedImage
-            ? `http://localhost:1337${matchedImage.url}` // URL da imagem encontrada
-            : perfilNull // Imagem de fallback
-
+            ? `http://localhost:1337${matchedImage.url}`
+            : perfilNull
           console.log(`Diarista: ${diarist.nome}, URL da imagem: ${perfilUrl}`)
 
           return {
@@ -54,7 +36,7 @@ export default defineComponent({
             email: diarist.email,
             endereco: diarist.endereco,
             cidade: diarist.cidade,
-            perfil: perfilUrl, // URL final da imagem
+            perfil: perfilUrl,
           }
         })
       } catch (error) {
@@ -62,10 +44,8 @@ export default defineComponent({
       }
     }
 
-    // Chama a função ao montar o componente
     onMounted(loadDiarists)
 
-    // Retorna as variáveis para serem usadas no template
     return {
       diarists,
     }
@@ -85,13 +65,11 @@ export default defineComponent({
         class="flex flex-col border-2 rounded-xl border-black p-6 m-3 justify-center items-center"
       >
         <img :src="diarist.perfil" width="150" alt="Imagem do perfil" />
-        <!-- <p>URL da imagem: {{ diarist.perafil }}</p> -->
-        <!-- Log visual -->
-        <strong>{{ diarist.nome }}</strong>
-        <p>{{ diarist.email }}</p>
-        <p>{{ diarist.contato }}</p>
-        <p>{{ diarist.endereco }}</p>
-        <p>{{ diarist.cidade }}</p>
+        <strong class="name">{{ diarist.nome }}</strong>
+        <p class="label-diarist-email">{{ diarist.email }}</p>
+        <p class="label-diarist-contact">{{ diarist.contato }}</p>
+        <p class="label-diarist-address">{{ diarist.endereco }}</p>
+        <p class="label-diarist-city">{{ diarist.cidade }}</p>
       </li>
     </ul>
   </main>

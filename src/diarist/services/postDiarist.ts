@@ -8,7 +8,6 @@ export default async function postDiarist(
   const BASE_URL = import.meta.env.VITE_STRAPI_BASE_URL
 
   try {
-    // Passo 1: Fazer upload do arquivo
     const uploadData = new FormData()
     uploadData.append('files', file)
 
@@ -28,12 +27,10 @@ export default async function postDiarist(
 
     const uploadedFileId = uploadResponse.data[0].id
 
-    // Adiciona o ID do arquivo ao campo perfil
     diaristData.perfil = [uploadedFileId]
 
     console.log('DiaristData antes do envio:', diaristData)
 
-    // Enviar dados do diarista
     const response = await axios.post(
       `${BASE_URL}/api/diaristas?populate=perfil`,
       { data: diaristData },

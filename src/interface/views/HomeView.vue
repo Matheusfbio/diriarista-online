@@ -4,6 +4,7 @@ import ShowUser from '@/interface/components/user/ShowUsers.vue'
 
 <template>
   <main class="px-[5%]">
-    <ShowUser />
+    <!-- <ShowUser /> -->
+    <AuthView />
   </main>
 </template>
